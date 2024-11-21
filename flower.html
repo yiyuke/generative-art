@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ZIM - Code Creativity</title>
+
+    <!-- zimjs.com - JavaScript Canvas Framework -->
+    <script type="module">
+      import zim from "https://zimjs.org/cdn/017/zim";
+
+      // See Docs under Frame for FIT, FILL, FULL, and TAG
+      new Frame(FIT, 720, 720, yellow, yellow, ready);
+      function ready() {
+        // given F (Frame), S (Stage), W (width), H (height)
+        // put code here
+        zog("ready from ZIM Frame"); // logs in console (F12 - choose console)
+
+        // REFERENCES for ZIM at http://zimjs.com
+        // see http://zimjs.com/learn.html for video and code tutorials
+        // see http://zimjs.com/docs.html for documentation
+        // see https://www.youtube.com/watch?v=pUjHFptXspM for INTRO to ZIM
+        // see https://www.youtube.com/watch?v=v7OT0YrDWiY for INTRO to CODE
+
+        // CODE HERE
+
+        // Code found Twitter - but forgot to keep link and it is gone
+        // I remember it was in P5js
+        // I just wanted to show you that it is often easy to bring processing code into ZIM
+        // ZIM does not automatically assume you are drawing in a Shape so we make a Shape
+        // ZIM does not automatically assume we have a setup and a draw so we use a Ticker for draw
+
+        let t = 28; // Time/angle variable for animation
+        const shape = new Shape(W, H).addTo(); // Creates a new shape with canvas width/height and adds to stage
+
+        // Animation loop using Ticker
+        Ticker.add(() => {
+          shape.c(); // Clears the shape for each frame
+          t += 0.004; // Incrementally changes the angle
+
+          // Creates 6 initial branches, spaced by PI/4 radians (45 degrees)
+          for (let r = 0; r < 6; r += Math.PI / 4) {
+            f(W / 2, H / 2, r, W / 6); // Starts drawing from center with initial length of W/6
+          }
+        });
+
+        // Recursive function to draw branches
+        function f(x, y, r, d) {
+          if (d > 3) {
+            // Stops recursion when branches get too small (less than 3)
+            shape
+              .s(purple) // Sets stroke color to purple
+              .ss(1) // Sets stroke size to 1
+              .mt(x, y) // Moves to current position
+              .lt(
+                // Draws line to new position:
+                (x += Math.cos(r) * d), // Calculates new x using cosine
+                (y -= Math.sin(r) * d) // Calculates new y using sine
+              );
+
+            // Recursively creates two new branches:
+            f(x, y, r + y / 99 + t, d / 1.5); // Branch 1 with positive angle change
+            f(x, y, r - y / 99 - t, d / 1.5); // Branch 2 with negative angle change
+          }
+        }
+
+        S.update(); // this is needed to show any changes
+
+        // DOCS FOR ITEMS USED
+        // https://zimjs.com/docs.html?item=Frame
+        // https://zimjs.com/docs.html?item=Shape
+        // https://zimjs.com/docs.html?item=addTo
+        // https://zimjs.com/docs.html?item=zog
+        // https://zimjs.com/docs.html?item=Ticker
+
+        // FOOTER
+        // call remote script to make ZIM Foundation for Creative Coding icon
+        //createIcon();
+      } // end ready
+    </script>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+  </head>
+  <body></body>
+</html>

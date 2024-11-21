@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>ZIM - Code Creativity</title>
+
+    <!-- zimjs.com - JavaScript Canvas Framework -->
+    <script type="module">
+      import zim from "https://zimjs.org/cdn/017/zim";
+
+      // See Docs under Frame for FIT, FILL, FULL, and TAG
+      new Frame(FIT, 1024, 768, light, dark, ready);
+      function ready() {
+        // given F (Frame), S (Stage), W (width), H (height)
+        // put code here
+
+        // CODE HERE
+
+        // create grey scale border by tiling rectangles
+        // we could tile an arrow function but we will split it up into steps here
+        // return a black rectangle with a random alpha
+        function makeRectangle() {
+          return new Rectangle(W / 10, H, `rgba(0,0,0,${rand(0.02, 0.2)})`);
+        }
+        const tile = new Tile({
+          obj: makeRectangle,
+          cols: 10,
+          clone: false, // otherwise would clone the first rectangle made
+        }).addTo();
+
+        // optionally scroll the Tile - cache it for better performance on mobile
+        const scroller = new Scroller(tile.cache(), 0.3);
+
+        // add a white central core - optional
+        new Rectangle(W, H * 0.8, white).cache().center();
+
+        // create a Blob to animate - give it a large controlLength to make curves smoother
+        // then loop through the control points and wiggle them by
+        // property, baseAmount, minAmount, maxAmount, minTime, maxTime
+        // update the Blob in a Ticker (otherwise will not see the animation)
+        const blob = new Blob({
+          color: black,
+          points: 10,
+          controlLength: 500,
+          interactive: false,
+        }).center();
+        loop(blob.pointControls, (point) => {
+          point.wiggle("x", point.x, 100, 400, 2500, 5500);
+          point.wiggle("y", point.y, 50, 200, 2500, 5500);
+          point.wiggle("rotation", 0, 100, 300, 5500, 15000);
+        });
+        Ticker.add(() => {
+          blob.update();
+        });
+
+        // DOCS FOR ITEMS USED
+        // https://zimjs.com/docs.html?item=Frame
+        // https://zimjs.com/docs.html?item=Rectangle
+        // https://zimjs.com/docs.html?item=Blob
+        // https://zimjs.com/docs.html?item=Tile
+        // https://zimjs.com/docs.html?item=wiggle
+        // https://zimjs.com/docs.html?item=loop
+        // https://zimjs.com/docs.html?item=addTo
+        // https://zimjs.com/docs.html?item=removeFrom
+        // https://zimjs.com/docs.html?item=center
+        // https://zimjs.com/docs.html?item=Scroller
+        // https://zimjs.com/docs.html?item=timeout
+        // https://zimjs.com/docs.html?item=zog
+        // https://zimjs.com/docs.html?item=Ticker
+
+        // FOOTER
+        // createIcon(26, 26);
+        // const greet = createGreet();
+        // timeout(2000, () => {
+        //   greet.removeFrom();
+        // });
+      }
+    </script>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+  </head>
+  <body></body>
+</html>
