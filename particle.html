@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Name Particles</title>
+    <script type="module">
+      import zim from "https://zimjs.org/cdn/017/zim";
+
+      new Frame(FIT, 800, 800, "#000", "#000", ready);
+
+      function ready() {
+        const stage = new Container().addTo();
+
+        const label = new Label("输入名字:")
+          .pos(20, 20)
+          //.color("white")
+          .addTo(stage);
+
+        const nameInput = new TextInput({
+          placeholder: "输入名字",
+          size: 20,
+          color: "#fff",
+          backgroundColor: "#333",
+          width: 200,
+          height: 30,
+        })
+          .pos(120, 20)
+          .addTo(stage);
+
+        let particles = [];
+        let currentName = "Aurelia";
+
+        nameInput.on("input", () => {
+          currentName = nameInput.text || "Aurelia";
+          createParticles();
+        });
+
+        function isVowel(char) {
+          return "aeiou".includes(char.toLowerCase());
+        }
+
+        function createParticles() {
+          // 清除现有粒子
+          particles.forEach((p) => p.removeFrom());
+          particles = [];
+
+          const letters = currentName.split("");
+          letters.forEach((letter, i) => {
+            const isVow = isVowel(letter);
+            const hue = ((letter.charCodeAt(0) - 97) / 26) * 360;
+            const color = `hsl(${hue}, 70%, 60%)`;
+            const size = isVow ? 15 : 10;
+
+            for (let j = 0; j < 5; j++) {
+              const circle = new Circle(size, color)
+                .pos(rand(0, W), rand(0, H))
+                .addTo(stage);
+
+              // 添加随机运动
+              circle.velocityX = rand(-2, 2);
+              circle.velocityY = rand(-2, 2);
+              circle.letterIndex = i;
+              particles.push(circle);
+            }
+          });
+        }
+
+        createParticles();
+
+        Ticker.add(() => {
+          particles.forEach((p, i) => {
+            // 更新位置
+            p.x += p.velocityX;
+            p.y += p.velocityY;
+
+            // 边界检查
+            if (p.x < 0 || p.x > W) p.velocityX *= -1;
+            if (p.y < 0 || p.y > H) p.velocityY *= -1;
+
+            // 让同一个字母的粒子相互吸引
+            particles.forEach((p2, j) => {
+              if (i !== j && p.letterIndex === p2.letterIndex) {
+                const dx = p2.x - p.x;
+                const dy = p2.y - p.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 100 && dist > 0) {
+                  p.velocityX += (dx / dist) * 0.1;
+                  p.velocityY += (dy / dist) * 0.1;
+                }
+              }
+            });
+          });
+        });
+
+        S.update();
+      }
+    </script>
+  </head>
+  <body></body>
+</html>

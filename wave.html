@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Name Wave Art</title>
+    <script type="module">
+      import zim from "https://zimjs.org/cdn/017/zim";
+
+      new Frame(FIT, 800, 400, "#111", "#111", ready);
+
+      function ready() {
+        const stage = new Container().addTo();
+
+        const label = new Label("输入名字:")
+          .pos(20, 20)
+          //.color("white")
+          .addTo(stage);
+
+        const nameInput = new TextInput({
+          placeholder: "输入名字",
+          size: 20,
+          color: "#fff",
+          backgroundColor: "#333",
+          width: 200,
+          height: 30,
+        })
+          .pos(120, 20)
+          .addTo(stage);
+
+        const shape = new Shape().addTo(stage);
+        let time = 0;
+
+        // 将字母转换为频率
+        const letterToFreq = (letter) => {
+          if (!letter) return 1;
+          return ((letter.toLowerCase().charCodeAt(0) - 97) / 26) * 5 + 1;
+        };
+
+        // 将字母转换为振幅
+        const letterToAmp = (letter) => {
+          if (!letter) return 30;
+          return ((letter.toLowerCase().charCodeAt(0) - 97) / 26) * 50 + 30;
+        };
+
+        // 将字母转换为颜色
+        const letterToColor = (letter) => {
+          if (!letter) return "#4a90e2";
+          const hue = ((letter.toLowerCase().charCodeAt(0) - 97) / 26) * 360;
+          return `hsl(${hue}, 70%, 60%)`;
+        };
+
+        let currentName = "Aurelia";
+        nameInput.on("input", () => {
+          currentName = nameInput.text || "Aurelia";
+        });
+
+        Ticker.add(() => {
+          shape.c();
+          time += 0.03;
+
+          // 绘制每个字母对应的波形
+          currentName.split("").forEach((letter, i) => {
+            const freq = letterToFreq(letter);
+            const amp = letterToAmp(letter);
+            const color = letterToColor(letter);
+            const offset = i * 50;
+
+            shape.s(color).ss(2);
+            shape.mt(0, H / 2);
+
+            for (let x = 0; x < W; x += 1) {
+              const y = Math.sin((x * freq) / 100 + time + offset) * amp;
+              shape.lt(x, H / 2 + y);
+            }
+          });
+        });
+
+        S.update();
+      }
+    </script>
+  </head>
+  <body></body>
+</html>

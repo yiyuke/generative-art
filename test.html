@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Name-based Fractal Tree</title>
+    <script type="module">
+      import zim from "https://zimjs.org/cdn/017/zim";
+
+      new Frame(FIT, 720, 720, "#f0f0f0", "#f0f0f0", ready);
+
+      function ready() {
+        const stage = new Container().addTo();
+
+        // 创建输入框和标签
+        const label = new Label("输入名字:").pos(20, 20).addTo(stage);
+
+        const nameInput = new TextInput({
+          placeholder: "例如: Aurelia",
+          size: 20,
+          color: "#333",
+          backgroundColor: "white",
+          width: 200,
+          height: 30,
+        })
+          .pos(120, 20)
+          .addTo(stage);
+
+        let t = 28;
+        let currentName = "Aurelia";
+        const shape = new Shape().addTo(stage);
+
+        // 修改输入事件监听
+        nameInput.on("input", () => {
+          currentName = nameInput.text || "Aurelia";
+        });
+
+        // 将字母映射到角度变化
+        const letterToAngle = (letter) => {
+          if (!letter) return 0;
+          const charCode = letter.toLowerCase().charCodeAt(0) - 97;
+          return ((charCode / 26) * Math.PI) / 2;
+        };
+
+        // 将字母映射到颜色
+        const letterToColor = (letter) => {
+          if (!letter) return "purple";
+          const charCode = letter.toLowerCase().charCodeAt(0) - 97;
+          const hue = (charCode / 26) * 360;
+          return `hsl(${hue}, 70%, 50%)`;
+        };
+
+        // 绘制分支的函数
+        function drawBranch(x, y, r, d, color, depth) {
+          if (d > 3) {
+            const complexity = Math.min(currentName.length / 3, 2);
+            const branchColor =
+              depth < currentName.length
+                ? letterToColor(currentName[depth])
+                : color;
+
+            shape
+              .s(branchColor)
+              .ss(Math.max(1, d / 10))
+              .mt(x, y)
+              .lt((x += Math.cos(r) * d), (y -= Math.sin(r) * d));
+
+            const angleVariation =
+              depth < currentName.length
+                ? letterToAngle(currentName[depth])
+                : Math.PI / 6;
+
+            drawBranch(
+              x,
+              y,
+              r + y / 99 + t + angleVariation,
+              d / 1.5,
+              branchColor,
+              depth + 1
+            );
+            drawBranch(
+              x,
+              y,
+              r - y / 99 - t - angleVariation,
+              d / 1.5,
+              branchColor,
+              depth + 1
+            );
+          }
+        }
+
+        // 动画循环
+        Ticker.add(() => {
+          shape.c(); // 清除之前的绘制
+          t += 0.004;
+
+          const initialBranches = Math.max(3, Math.min(8, currentName.length));
+          const baseAngle = letterToAngle(currentName[0]);
+          const baseColor = letterToColor(currentName[0]);
+
+          // 从中心开始绘制分支
+          for (let r = 0; r < initialBranches; r += Math.PI / initialBranches) {
+            drawBranch(W / 2, H / 2, r + baseAngle, W / 6, baseColor, 0);
+          }
+        });
+
+        stage.update(); // 更新舞台
+      }
+    </script>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+  </head>
+  <body></body>
+</html>
